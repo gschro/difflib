@@ -12,7 +12,7 @@ defmodule Difflib.MixProject do
       source_url: "https://github.com/gschro/difflib",
       docs: [
         main: "Difflib",
-        extras: ["README.md"]
+        extras: ["README.md", "LICENSE"]
       ]
     ]
   end
