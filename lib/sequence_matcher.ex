@@ -779,7 +779,7 @@ defmodule Difflib.SequenceMatcher do
 
     # avail[x] is the number of times x appears in 'b' less the
     # number of times we've seen it in 'a' so far ... kinda
-    %{avail: avail, matches: matches} =
+    %{matches: matches} =
       Enum.reduce(a_vals, %{matches: 0, avail: %{}}, fn elt, acc ->
         numb =
           if Map.has_key?(acc.avail, elt) do
