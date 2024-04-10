@@ -1,6 +1,11 @@
 # Difflib
 
-**TODO: Add description**
+TODO: 
+- Add License
+- Update README
+- package and publish to hex
+- try to implement differ and htmldiffer etc?
+
 
 ## Installation
 

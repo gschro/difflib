@@ -1,8 +1,3 @@
-# TODO:
-# - create readme
-# - package and publish to hex
-# - try to implement differ and htmldiffer etc?
-
 defmodule Difflib.SequenceMatcher do
   import While
   import Counter
@@ -37,25 +32,25 @@ defmodule Difflib.SequenceMatcher do
   ## Examples
   Example, comparing two strings, and considering blanks to be "junk"
 
-    iex> is_junk = fn c -> c == " " end
-    iex> a = "private Thread currentThread;"
-    iex> b = "private volatile Thread currentThread;"
-    iex> SequenceMatcher.ratio(a, b, is_junk: is_junk)
-    0.8656716417910447
+      iex> is_junk = fn c -> c == " " end
+      iex> a = "private Thread currentThread;"
+      iex> b = "private volatile Thread currentThread;"
+      iex> SequenceMatcher.ratio(a, b, is_junk: is_junk)
+      0.8656716417910447
 
-  `ratio/3` returns a float in [0, 1], measuring the "similarity" of the
+  `ratio/3` returns a float between 0 and 1, measuring the "similarity" of the
   sequences.  As a rule of thumb, a `ratio/3` value over 0.6 means the
   sequences are close matches.
 
   If you're only interested in where the sequences match,
   `get_matching_blocks/3` is handy:
 
-    iex> for {a, b, size} <- SequenceMatcher.get_matching_blocks(a, b, is_junk: is_junk) do
-    iex>   IO.puts("a[\#{a}] and b[\#{b}] match for \#{size} elements")
-    iex> end
-    a[0] and b[0] match for 8 elements
-    a[8] and b[17] match for 21 elements
-    a[29] and b[38] match for 0 elements
+      iex> for {a, b, size} <- SequenceMatcher.get_matching_blocks(a, b, is_junk: is_junk) do
+      iex>   IO.puts("a[\#{a}] and b[\#{b}] match for \#{size} elements")
+      iex> end
+      a[0] and b[0] match for 8 elements
+      a[8] and b[17] match for 21 elements
+      a[29] and b[38] match for 0 elements
 
   Note that the last tuple returned by `get_matching_blocks/3` is always a
   dummy, {length(a), length(b), 0}, and this is the only case in which the last
@@ -64,12 +59,12 @@ defmodule Difflib.SequenceMatcher do
   If you want to know how to change the first sequence into the second,
   use `get_opcodes/3`
 
-    iex> for {op, a1, a2, b1, b2} <- SequenceMatcher.get_opcodes(a, b, is_junk: is_junk) do
-    iex>   IO.puts("\#{op} a[\#{a1}:\#{a2}] b[\#{b1}:\#{b2}]")
-    iex> end
-    equal a[0:8] b[0:8]
-    insert a[8:8] b[8:17]
-    equal a[8:29] b[17:38]
+      iex> for {op, a1, a2, b1, b2} <- SequenceMatcher.get_opcodes(a, b, is_junk: is_junk) do
+      iex>   IO.puts("\#{op} a[\#{a1}:\#{a2}] b[\#{b1}:\#{b2}]")
+      iex> end
+      equal a[0:8] b[0:8]
+      insert a[8:8] b[8:17]
+      equal a[8:29] b[17:38]
 
   See also function `get_close_matches/3` in this module, which shows how
   simple code building on SequenceMatcher can be used to do useful work.
@@ -88,7 +83,7 @@ defmodule Difflib.SequenceMatcher do
   for junk a LOT, it's important to minimize the number of calls.
   Before the tricks described here, chain_b was by far the most
   time-consuming routine in the whole module!  If anyone sees
-  Jim Roskind, thank him again for profile.py -- I never would
+  Jim Roskind, thank him again for [profile.py](https://github.com/python/cpython/blob/main/Lib/profile.py) -- I never would
   have guessed that.
 
   The first trick is to build b2j ignoring the possibility
@@ -98,36 +93,35 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-    - a: The first of two sequences to be compared. The elements of a must be hashable.
-    - b: The second of two sequences to be compared. The elements of a must be hashable.
-    - opts: Keyword list of options.
-      - is_junk: Optional parameter is_junk is a one-argument
+    - `a` The first of two sequences to be compared. The elements of a must be hashable.
+    - `b` The second of two sequences to be compared. The elements of b must be hashable.
+    - `opts` Keyword list of options.
+      - `is_junk` Optional parameter is_junk is a one-argument
     function that takes a sequence element and returns true if the
-    element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-    no elements are considered to be junk.  For example, pass
+    element is junk. The default is nil. For example, pass
         `fn x -> x == " "`
     if you're comparing lines as sequences of characters, and don't
     want to synch up on blanks or hard tabs.
-      - auto_junk: Optional parameter autojunk should be set to false to disable the
+      - `auto_junk` Optional parameter autojunk should be set to false to disable the
     "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
   ## Example
 
-    iex> is_junk = fn x -> x == " " end
-    iex> b = "abcd abcd"
-    iex> SequenceMatcher.chain_b(b, is_junk: is_junk)
-    %{
-      b2j: %{
-        "a" => [0, 5],
-        "b" => [1, 6],
-        "c" => [2, 7],
-        "d" => [3, 8]
-      },
-      isbjunk: #Function<1.118419402/1>,
-      isbpopular: #Function<1.118419402/1>,
-      bjunk: %{" " => true},
-      bpopular: %{}
-    }
+      iex> is_junk = fn x -> x == " " end
+      iex> b = "abcd abcd"
+      iex> SequenceMatcher.chain_b(b, is_junk: is_junk)
+      %{
+        b2j: %{
+          "a" => [0, 5],
+          "b" => [1, 6],
+          "c" => [2, 7],
+          "d" => [3, 8]
+        },
+        isbjunk: #Function<1.118419402/1>,
+        isbpopular: #Function<1.118419402/1>,
+        bjunk: %{" " => true},
+        bpopular: %{}
+      }
   """
   def chain_b(b, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:is_junk, auto_junk: true])
@@ -226,34 +220,33 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-    - a: The first of two sequences to be compared. The elements of a must be hashable.
-    - b: The second of two sequences to be compared. The elements of a must be hashable.
-    - opts: Keyword list of options.
-      - alo: Optional parameter alo is the lower bound of the range in a to consider. Default is 0.
-      - ahi: Optional parameter ahi is the upper bound of the range in a to consider. Default is length of a.
-      - blo: Optional parameter blo is the lower bound of the range in b to consider. Default is 0.
-      - bhi: Optional parameter bhi is the upper bound of the range in b to consider. Default is length of b.
-      - is_junk: Optional parameter is_junk is a one-argument
+    - `a` The first of two sequences to be compared. The elements of a must be hashable.
+    - `b` The second of two sequences to be compared. The elements of b must be hashable.
+    - `opts` Keyword list of options.
+      - `alo` Optional parameter alo is the lower bound of the range in a to consider. Default is 0.
+      - `ahi` Optional parameter ahi is the upper bound of the range in a to consider. Default is length of a.
+      - `blo` Optional parameter blo is the lower bound of the range in b to consider. Default is 0.
+      - `bhi` Optional parameter bhi is the upper bound of the range in b to consider. Default is length of b.
+      - `is_junk` Optional parameter is_junk is a one-argument
     function that takes a sequence element and returns true if the
-    element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-    no elements are considered to be junk.  For example, pass
+    element is junk. The default is nil. For example, pass
         `fn x -> x == " "`
     if you're comparing lines as sequences of characters, and don't
     want to synch up on blanks or hard tabs.
-      - auto_junk: Optional parameter autojunk should be set to false to disable the
+      - `auto_junk` Optional parameter autojunk should be set to false to disable the
     "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
   ## Examples
 
-    iex> is_junk = fn x -> x == " " end
-    iex> a = " abcd"
-    iex> b = "abcd abcd"
-    iex> SequenceMatcher.find_longest_match(a, b, alo: 0, ahi: 5, blo: 0, bhi: 9, is_junk: is_junk)
-    {1, 0, 4}
-    iex> a = "ab"
-    iex> b = "c"
-    iex> SequenceMatcher.find_longest_match(a, b, alo: 0, ahi: 2, blo: 0, bhi: 1)
-    {0, 0, 0}
+      iex> is_junk = fn x -> x == " " end
+      iex> a = " abcd"
+      iex> b = "abcd abcd"
+      iex> SequenceMatcher.find_longest_match(a, b, alo: 0, ahi: 5, blo: 0, bhi: 9, is_junk: is_junk)
+      {1, 0, 4}
+      iex> a = "ab"
+      iex> b = "c"
+      iex> SequenceMatcher.find_longest_match(a, b, alo: 0, ahi: 2, blo: 0, bhi: 1)
+      {0, 0, 0}
 
   ## CAUTION
 
@@ -381,26 +374,25 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - a: The first of two sequences to be compared. The elements of a must be hashable.
-  - b: The second of two sequences to be compared. The elements of a must be hashable.
-  - opts: Keyword list of options.
-    - is_junk: Optional parameter is_junk is a one-argument
+  - `a` The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` Keyword list of options.
+    - `is_junk` Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-  no elements are considered to be junk.  For example, pass
+  element is junk. The default is nil. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - auto_junk: Optional parameter autojunk should be set to false to disable the
+    - `auto_junk` Optional parameter autojunk should be set to false to disable the
   "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
 
   ## Example
 
-    iex> a = "abxcd"
-    iex> b = "abcd"
-    iex> SequenceMatcher.get_matching_blocks(a, b)
-    [{0, 0, 2}, {3, 2, 2}, {5, 4, 0}]
+      iex> a = "abxcd"
+      iex> b = "abcd"
+      iex> SequenceMatcher.get_matching_blocks(a, b)
+      [{0, 0, 2}, {3, 2, 2}, {5, 4, 0}]
   """
   def get_matching_blocks(a, b, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:is_junk, auto_junk: true])
@@ -513,32 +505,31 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - a: The first of two sequences to be compared. The elements of a must be hashable.
-  - b: The second of two sequences to be compared. The elements of a must be hashable.
-  - opts: Keyword list of options.
-    - is_junk: Optional parameter is_junk is a one-argument
+  - `a` The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` Keyword list of options.
+    - `is_junk` Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-  no elements are considered to be junk.  For example, pass
+  element is junk. The default is nil. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - auto_junk: Optional parameter autojunk should be set to false to disable the
+    - `auto_junk` Optional parameter autojunk should be set to false to disable the
   "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
 
   ## Example
 
-    iex> a = "qabxcd"
-    iex> b = "abycdf"
-    iex> SequenceMatcher.get_opcodes(a, b)
-    [
-      {:delete, 0, 1, 0, 0},
-      {:equal, 1, 3, 0, 2},
-      {:replace, 3, 4, 2, 3},
-      {:equal, 4, 6, 3, 5},
-      {:insert, 6, 6, 5, 6}
-    ]
+      iex> a = "qabxcd"
+      iex> b = "abycdf"
+      iex> SequenceMatcher.get_opcodes(a, b)
+      [
+        {:delete, 0, 1, 0, 0},
+        {:equal, 1, 3, 0, 2},
+        {:replace, 3, 4, 2, 3},
+        {:equal, 4, 6, 3, 5},
+        {:insert, 6, 6, 5, 6}
+      ]
   """
   def get_opcodes(a, b, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:is_junk, auto_junk: true])
@@ -579,48 +570,47 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - a: The first of two sequences to be compared. The elements of a must be hashable.
-  - b: The second of two sequences to be compared. The elements of a must be hashable.
-  - opts: Keyword list of options.
-    - n: Optional parameter n is the number of lines of context to include in each group. Default is 3.
-    - is_junk: Optional parameter is_junk is a one-argument
+  - `a` The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` Keyword list of options.
+    - `n` Optional parameter n is the number of lines of context to include in each group. Default is 3.
+    - `is_junk` Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-  no elements are considered to be junk.  For example, pass
+  element is junk. The default is nil. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - auto_junk: Optional parameter autojunk should be set to false to disable the
+    - `auto_junk` Optional parameter autojunk should be set to false to disable the
   "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
 
   ## Example
 
-    iex> a = Enum.map(1..39, &Integer.to_string/1)
-    iex> b = Enum.slice(a, 0..-1)
-    iex> b = Enum.slice(b, 0..7) ++ ["i"] ++ Enum.slice(b, 8..-1)
-    iex> b = Enum.slice(b, 0..19) ++ ["20x"] ++ Enum.slice(b, 21..-1)
-    iex> b = Enum.slice(b, 0..22) ++ Enum.slice(b, 28..-1)
-    iex> b = Enum.slice(b, 0..29) ++ ["35y"] ++ Enum.slice(b, 31..-1)
-    iex> SequenceMatcher.get_grouped_opcodes(a, b)
-    [
+      iex> a = Enum.map(1..39, &Integer.to_string/1)
+      iex> b = Enum.slice(a, 0..-1)
+      iex> b = Enum.slice(b, 0..7) ++ ["i"] ++ Enum.slice(b, 8..-1)
+      iex> b = Enum.slice(b, 0..19) ++ ["20x"] ++ Enum.slice(b, 21..-1)
+      iex> b = Enum.slice(b, 0..22) ++ Enum.slice(b, 28..-1)
+      iex> b = Enum.slice(b, 0..29) ++ ["35y"] ++ Enum.slice(b, 31..-1)
+      iex> SequenceMatcher.get_grouped_opcodes(a, b)
       [
-        {:equal, 5, 8, 5, 8},
-        {:insert, 8, 8, 8, 9},
-        {:equal, 8, 11, 9, 12}],
-      [
-        {:equal, 16, 19, 17, 20},
-        {:replace, 19, 20, 20, 21},
-        {:equal, 20, 22, 21, 23},
-        {:delete, 22, 27, 23, 23},
-        {:equal, 27, 30, 23, 26}
-      ],
-      [
-        {:equal, 31, 34, 27, 30},
-        {:replace, 34, 35, 30, 31},
-        {:equal, 35, 38, 31, 34}
+        [
+          {:equal, 5, 8, 5, 8},
+          {:insert, 8, 8, 8, 9},
+          {:equal, 8, 11, 9, 12}],
+        [
+          {:equal, 16, 19, 17, 20},
+          {:replace, 19, 20, 20, 21},
+          {:equal, 20, 22, 21, 23},
+          {:delete, 22, 27, 23, 23},
+          {:equal, 27, 30, 23, 26}
+        ],
+        [
+          {:equal, 31, 34, 27, 30},
+          {:replace, 34, 35, 30, 31},
+          {:equal, 35, 38, 31, 34}
+        ]
       ]
-    ]
   """
   def get_grouped_opcodes(a, b, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:is_junk, auto_junk: true, n: 3])
@@ -700,26 +690,25 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - a: The first of two sequences to be compared. The elements of a must be hashable.
-  - b: The second of two sequences to be compared. The elements of a must be hashable.
-  - opts: Keyword list of options.
-    - is_junk: Optional parameter is_junk is a one-argument
+  - `a` The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` Keyword list of options.
+    - `is_junk` Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-  no elements are considered to be junk.  For example, pass
+  element is junk. The default is nil. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - auto_junk: Optional parameter autojunk should be set to false to disable the
+    - `auto_junk` Optional parameter autojunk should be set to false to disable the
   "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
 
   ## Example
 
-    iex> a = "abcd"
-    iex> b = "bcde"
-    iex> SequenceMatcher.ratio(a, b)
-    0.75
+      iex> a = "abcd"
+      iex> b = "bcde"
+      iex> SequenceMatcher.ratio(a, b)
+      0.75
   """
   def ratio(a, b, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:is_junk, auto_junk: true])
@@ -745,18 +734,18 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - a: The first of two sequences to be compared. The elements of a must be hashable.
-  - b: The second of two sequences to be compared. The elements of a must be hashable.
-  - opts: Keyword list of options.
-    - fullbcount: Optional parameter fullbcount is a map of the counts of each element in b.
+  - `a` The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` Keyword list of options.
+    - `fullbcount` Optional parameter fullbcount is a map of the counts of each element in b.
   It will be constructed if it does not exist. Default is nil.
 
   ## Example
 
-    iex> a = "abcd"
-    iex> b = "bcde"
-    iex> SequenceMatcher.quick_ratio(a, b)
-    0.75
+      iex> a = "abcd"
+      iex> b = "bcde"
+      iex> SequenceMatcher.quick_ratio(a, b)
+      0.75
   """
   def quick_ratio(a, b, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:fullbcount])
@@ -809,15 +798,15 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - a: The first of two sequences to be compared. The elements of a must be hashable.
-  - b: The second of two sequences to be compared. The elements of a must be hashable.
+  - `a` The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` The second of two sequences to be compared. The elements of b must be hashable.
 
   ## Example
 
-    iex> a = "abcd"
-    iex> b = "bcde"
-    iex> SequenceMatcher.real_quick_ratio(a, b)
-    1.0
+      iex> a = "abcd"
+      iex> b = "bcde"
+      iex> SequenceMatcher.real_quick_ratio(a, b)
+      1.0
   """
   def real_quick_ratio(a, b) do
     la = get_length(a)
@@ -837,25 +826,21 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - word: The sequence for which close matches are desired. Typically a string.
-  - possibilities: A list of sequences against which to match word. Typically a list of strings.
-  - opts: Keyword list of options.
-    - n: Optional parameter n is the maximum number of close matches to return. Default is 3 and n must be > 0.
-    - cutoff: Optional parameter cutoff is a float between 0 and 1. Possibilities that don't score at least that similar to word are ignored. Default is 0.6.
-    - is_junk: Optional parameter is_junk is a one-argument
+  - `word` The sequence for which close matches are desired. Typically a string.
+  - `possibilities` A list of sequences against which to match word. Typically a list of strings.
+  - `opts` Keyword list of options.
+    - `n` Optional parameter n is the maximum number of close matches to return. Default is 3 and n must be > 0.
+    - `cutoff` Optional parameter cutoff is a float between 0 and 1. Possibilities that don't score at least that similar to word are ignored. Default is 0.6.
+    - `is_junk` Optional parameter is_junk is a one-argument
     function that takes a sequence element and returns true if the
-    element is junk. The default is nil which is equivalent to passing `fn _ -> false end", i.e.
-    no elements are considered to be junk.  For example, pass
-        `fn x -> x == " "`
-    if you're comparing lines as sequences of characters, and don't
-    want to synch up on blanks or hard tabs.
-      - auto_junk: Optional parameter autojunk should be set to false to disable the
+    element is junk. The default is nil. For example, pass `fn x -> x == " "` if you're comparing lines as sequences of characters, and don't want to synch up on blanks or hard tabs.
+      - `auto_junk` Optional parameter autojunk should be set to false to disable the
     "automatic junk heuristic" that treats popular elements as junk. Default is true.
 
   ## Example
 
-    iex> SequenceMatcher.get_close_matches("appel", ["ape", "apple", "peach", "puppy"])
-    ["apple", "ape"]
+      iex> SequenceMatcher.get_close_matches("appel", ["ape", "apple", "peach", "puppy"])
+      ["apple", "ape"]
   """
   def get_close_matches(word, possibilities, opts \\ []) do
     validated_opts = Keyword.validate!(opts, [:is_junk, auto_junk: true, n: 3, cutoff: 0.6])
