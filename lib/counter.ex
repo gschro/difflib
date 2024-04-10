@@ -1,4 +1,6 @@
 defmodule Counter do
+  @moduledoc false
+
   defmacro counter(counter_names) do
     for {counter_name, i} <- Enum.with_index(counter_names) do
       index = i + 1

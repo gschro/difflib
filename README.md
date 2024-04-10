@@ -5,6 +5,7 @@ TODO:
 - Update README
 - package and publish to hex
 - try to implement differ and htmldiffer etc?
+- Add Type specs
 
 
 ## Installation
