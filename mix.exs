@@ -12,7 +12,7 @@ defmodule Difflib.MixProject do
       source_url: "https://github.com/gschro/difflib",
       description: "A set of helpers for computing deltas between objects.",
       docs: [
-        main: "Difflib",
+        main: "README",
         extras: ["README.md", "LICENSE"]
       ],
       package: [
