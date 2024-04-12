@@ -10,9 +10,16 @@ defmodule Difflib.MixProject do
       deps: deps(),
       name: "Difflib",
       source_url: "https://github.com/gschro/difflib",
+      description: "A set of helpers for computing deltas between objects.",
       docs: [
         main: "Difflib",
         extras: ["README.md", "LICENSE"]
+      ],
+      package: [
+        name: :difflib,
+        licenses: ["MIT"],
+        maintainers: ["gschro"],
+        links: %{"GitHub" => "https://github.com/gschro/difflib"}
       ]
     ]
   end
