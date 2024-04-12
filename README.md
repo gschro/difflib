@@ -34,10 +34,6 @@ def deps do
 end
 ```
 
-## Documentation
-
-Complete documentation can be found at [https://hexdocs.pm/difflib](https://hexdocs.pm/difflib)
-
 ## Basic Usage
 
 ``` elixir
@@ -60,3 +56,11 @@ iex> b = "bcde"
 iex> SequenceMatcher.ratio(a, b)
 0.75
 ```
+
+## Documentation
+
+Complete documentation can be found at [https://hexdocs.pm/difflib](https://hexdocs.pm/difflib)
+
+## Source
+
+Code can be found at [https://github.com/gschro/difflib](https://github.com/gschro/difflib)
