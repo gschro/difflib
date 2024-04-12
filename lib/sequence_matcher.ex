@@ -13,17 +13,23 @@ defmodule Difflib.SequenceMatcher do
   published in the late 1980's by Ratcliff and Obershelp under the
   hyperbolic name "gestalt pattern matching".  The basic idea is to find
   the longest contiguous matching subsequence that contains no "junk"
-  elements (R-O doesn't address junk).  The same idea is then applied
-  recursively to the pieces of the sequences to the left and to the right
+  elements (R-O doesn't address junk).
+
+  The same idea is then applied recursively to the pieces of the sequences to the left and to the right
   of the matching subsequence.  This does not yield minimal edit
-  sequences, but does tend to yield matches that "look right" to people
+  sequences, but does tend to yield matches that "look right" to people.
+
   SequenceMatcher tries to compute a "human-friendly diff" between two
   sequences.  Unlike e.g. UNIX(tm) diff, the fundamental notion is the
   longest *contiguous* & junk-free matching subsequence.  That's what
-  catches peoples' eyes.  The Windows(tm) windiff has another interesting
+  catches peoples' eyes.
+
+  The Windows(tm) windiff has another interesting
   notion, pairing up elements that appear uniquely in each sequence.
   That, and the method here, appear to yield more intuitive difference
-  reports than does diff.  This method appears to be the least vulnerable
+  reports than does diff.
+
+  This method appears to be the least vulnerable
   to synching up on blocks of "junk lines", though (like blank lines in
   ordinary text files, or maybe "<P>" lines in HTML files).  That may be
   because this is the only method of the 3 that has a *concept* of
@@ -53,7 +59,7 @@ defmodule Difflib.SequenceMatcher do
       a[29] and b[38] match for 0 elements
 
   Note that the last tuple returned by `get_matching_blocks/3` is always a
-  dummy, {length(a), length(b), 0}, and this is the only case in which the last
+  dummy, `{length(a), length(b), 0}`, and this is the only case in which the last
   tuple element (number of elements matched) is 0.
 
   If you want to know how to change the first sequence into the second,
@@ -79,31 +85,31 @@ defmodule Difflib.SequenceMatcher do
   Analyzes an input for junk elements.
 
   ## Background
-  Because is_junk is a user-defined function, and we test
+  Because `is_junk` is a user-defined function, and we test
   for junk a LOT, it's important to minimize the number of calls.
-  Before the tricks described here, chain_b was by far the most
+  Before the tricks described here, `chain_b/2` was by far the most
   time-consuming routine in the whole module!  If anyone sees
   Jim Roskind, thank him again for [profile.py](https://github.com/python/cpython/blob/main/Lib/profile.py) -- I never would
   have guessed that.
 
-  The first trick is to build b2j ignoring the possibility
+  The first trick is to build `b2j` ignoring the possibility
   of junk.  I.e., we don't call is_junk at all yet.  Throwing
-  out the junk later is much cheaper than building b2j "right"
+  out the junk later is much cheaper than building `b2j` "right"
   from the start.
 
   ## Parameters
 
-    - `a` The first of two sequences to be compared. The elements of a must be hashable.
-    - `b` The second of two sequences to be compared. The elements of b must be hashable.
-    - `opts` Keyword list of options.
-      - `is_junk` Optional parameter is_junk is a one-argument
+    - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+    - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+    - `opts` - Keyword list of options.
+      - `is_junk` - Optional parameter is_junk is a one-argument
     function that takes a sequence element and returns true if the
-    element is junk. The default is nil. For example, pass
+    element is junk. The default is `nil`. For example, pass
         `fn x -> x == " "`
     if you're comparing lines as sequences of characters, and don't
     want to synch up on blanks or hard tabs.
-      - `auto_junk` Optional parameter autojunk should be set to false to disable the
-    "automatic junk heuristic" that treats popular elements as junk. Default is true.
+      - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+    "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
   ## Example
 
@@ -204,12 +210,12 @@ defmodule Difflib.SequenceMatcher do
   Find longest matching block in a[alo...ahi] and b[blo...bhi].
 
   ## Description
-  If is_junk is not defined:
+  If `is_junk` is not defined:
 
-  Return {i,j,k} such that a[i...i+k] is equal to b[j...j+k], where
+  Return `{i,j,k}` such that `a[i...i+k]` is equal to `b[j...j+k]`, where
       alo <= i <= i+k <= ahi
       blo <= j <= j+k <= bhi
-  and for all {i',j',k'} meeting those conditions,
+  and for all `{i',j',k'}` meeting those conditions,
       k >= k'
       i <= i'
       and if i == i', j <= j'
@@ -220,21 +226,21 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-    - `a` The first of two sequences to be compared. The elements of a must be hashable.
-    - `b` The second of two sequences to be compared. The elements of b must be hashable.
-    - `opts` Keyword list of options.
-      - `alo` Optional parameter alo is the lower bound of the range in a to consider. Default is 0.
-      - `ahi` Optional parameter ahi is the upper bound of the range in a to consider. Default is length of a.
-      - `blo` Optional parameter blo is the lower bound of the range in b to consider. Default is 0.
-      - `bhi` Optional parameter bhi is the upper bound of the range in b to consider. Default is length of b.
-      - `is_junk` Optional parameter is_junk is a one-argument
+    - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+    - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+    - `opts` - Keyword list of options.
+      - `alo` - Optional parameter alo is the lower bound of the range in a to consider. The default is 0.
+      - `ahi` - Optional parameter ahi is the upper bound of the range in a to consider. The default is length of a.
+      - `blo` - Optional parameter blo is the lower bound of the range in b to consider. The default is 0.
+      - `bhi` - Optional parameter bhi is the upper bound of the range in b to consider. The default is length of b.
+      - `is_junk` - Optional parameter is_junk is a one-argument
     function that takes a sequence element and returns true if the
-    element is junk. The default is nil. For example, pass
+    element is junk. The default is `nil`. For example, pass
         `fn x -> x == " "`
     if you're comparing lines as sequences of characters, and don't
     want to synch up on blanks or hard tabs.
-      - `auto_junk` Optional parameter autojunk should be set to false to disable the
-    "automatic junk heuristic" that treats popular elements as junk. Default is true.
+      - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+    "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
   ## Examples
 
@@ -243,6 +249,7 @@ defmodule Difflib.SequenceMatcher do
       iex> b = "abcd abcd"
       iex> SequenceMatcher.find_longest_match(a, b, alo: 0, ahi: 5, blo: 0, bhi: 9, is_junk: is_junk)
       {1, 0, 4}
+
       iex> a = "ab"
       iex> b = "c"
       iex> SequenceMatcher.find_longest_match(a, b, alo: 0, ahi: 2, blo: 0, bhi: 1)
@@ -252,8 +259,8 @@ defmodule Difflib.SequenceMatcher do
 
   CAUTION:  stripping common prefix or suffix would be incorrect.
   E.g.,
-     ab
-     acab
+      ab
+      acab
   Longest matching block is "ab", but if common prefix is
   stripped, it's "a" (tied with "b").  UNIX(tm) diff does so
   strip, so ends up claiming that ab is changed to acab by
@@ -361,30 +368,30 @@ defmodule Difflib.SequenceMatcher do
   Return list of triples describing matching subsequences.
 
   ## Description
-  Each triple is of the form {i, j, n}, and means that
-  a[i...i+n] == b[j...j+n].  The triples are monotonically increasing in
-  i and in j.  it's also guaranteed that if
-  {i, j, n} and {i', j', n'} are adjacent triples in the list, and
-  the second is not the last triple in the list, then i+n != i' or
-  j+n != j'.  IOW, adjacent triples never describe adjacent equal
+  Each triple is of the form `{i, j, n}`, and means that
+  `a[i...i+n] == b[j...j+n]`.  The triples are monotonically increasing in
+  `i` and in `j`.  it's also guaranteed that if
+  `{i, j, n}` and `{i', j', n'}` are adjacent triples in the list, and
+  the second is not the last triple in the list, then `i+n != i'` or
+  `j+n != j'`.  IOW, adjacent triples never describe adjacent equal
   blocks.
 
-  The last triple is a dummy, {a.length, b.length, 0}, and is the only
-  triple with n==0.
+  The last triple is a dummy, `{a.length, b.length, 0}`, and is the only
+  triple with `n==0`.
 
   ## Parameters
 
-  - `a` The first of two sequences to be compared. The elements of a must be hashable.
-  - `b` The second of two sequences to be compared. The elements of b must be hashable.
-  - `opts` Keyword list of options.
-    - `is_junk` Optional parameter is_junk is a one-argument
+  - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` - Keyword list of options.
+    - `is_junk` - Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil. For example, pass
+  element is junk. The default is `nil`. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - `auto_junk` Optional parameter autojunk should be set to false to disable the
-  "automatic junk heuristic" that treats popular elements as junk. Default is true.
+    - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+  "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
 
   ## Example
@@ -490,32 +497,30 @@ defmodule Difflib.SequenceMatcher do
 
   ## Description
 
-  Each tuple is of the form {tag, i1, i2, j1, j2}.  The first tuple
-  has i1 == j1 == 0, and remaining tuples have i1 == the i2 from the
-  tuple preceding it, and likewise for j1 == the previous j2.
+  Each tuple is of the form `{tag, i1, i2, j1, j2}`.  The first tuple
+  has `i1 == j1 == 0`, and remaining tuples have `i1 ==` the `i2` from the
+  tuple preceding it, and likewise for `j1 ==` the previous `j2`.
 
-  The tags are strings, with these meanings:
+  The tags are atoms, with these meanings:
 
-  'replace':  a[i1...i2] should be replaced by b[j1...j2]
-  'delete':   a[i1...i2] should be deleted.
-              Note that j1==j2 in this case.
-  'insert':   b[j1...j2] should be inserted at a[i1...i1].
-              Note that i1==i2 in this case.
-  'equal':    a[i1...i2] == b[j1...j2]
+  - `:replace` - `a[i1...i2]` should be replaced by `b[j1...j2]`
+  - `:delete` - `a[i1...i2]` should be deleted. Note that `j1==j2` in this case.
+  - `:insert` - `b[j1...j2]` should be inserted at `a[i1...i1]`. Note that `i1==i2` in this case.
+  - `:equal` - `a[i1...i2] == b[j1...j2]`
 
   ## Parameters
 
-  - `a` The first of two sequences to be compared. The elements of a must be hashable.
-  - `b` The second of two sequences to be compared. The elements of b must be hashable.
-  - `opts` Keyword list of options.
-    - `is_junk` Optional parameter is_junk is a one-argument
+  - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` - Keyword list of options.
+    - `is_junk` - Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil. For example, pass
+  element is junk. The default is `nil`. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - `auto_junk` Optional parameter autojunk should be set to false to disable the
-  "automatic junk heuristic" that treats popular elements as junk. Default is true.
+    - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+  "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
 
   ## Example
@@ -565,23 +570,23 @@ defmodule Difflib.SequenceMatcher do
   Isolate change clusters by eliminating ranges with no changes.
 
   ## Description
-  Return a list groups with upto n lines of context.
+  Return a list groups with up to `n` lines of context.
   Each group is in the same format as returned by `get_opcodes/3`.
 
   ## Parameters
 
-  - `a` The first of two sequences to be compared. The elements of a must be hashable.
-  - `b` The second of two sequences to be compared. The elements of b must be hashable.
-  - `opts` Keyword list of options.
-    - `n` Optional parameter n is the number of lines of context to include in each group. Default is 3.
-    - `is_junk` Optional parameter is_junk is a one-argument
+  - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` - Keyword list of options.
+    - `n` - Optional parameter n is the number of lines of context to include in each group. The default is 3.
+    - `is_junk` - Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil. For example, pass
+  element is junk. The default is `nil`. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - `auto_junk` Optional parameter autojunk should be set to false to disable the
-  "automatic junk heuristic" that treats popular elements as junk. Default is true.
+    - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+  "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
 
   ## Example
@@ -678,8 +683,8 @@ defmodule Difflib.SequenceMatcher do
 
   ## Description
 
-  Where T is the total number of elements in both sequences, and
-  M is the number of matches, this is 2.0*M / T.
+  Where `T` is the total number of elements in both sequences, and
+  `M` is the number of matches, this is `2.0*M / T`.
   Note that this is 1 if the sequences are identical, and 0 if
   they have nothing in common.
 
@@ -690,17 +695,17 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - `a` The first of two sequences to be compared. The elements of a must be hashable.
-  - `b` The second of two sequences to be compared. The elements of b must be hashable.
-  - `opts` Keyword list of options.
-    - `is_junk` Optional parameter is_junk is a one-argument
+  - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` - Keyword list of options.
+    - `is_junk` - Optional parameter is_junk is a one-argument
   function that takes a sequence element and returns true if the
-  element is junk. The default is nil. For example, pass
+  element is junk. The default is `nil`. For example, pass
       `fn x -> x == " "`
   if you're comparing lines as sequences of characters, and don't
   want to synch up on blanks or hard tabs.
-    - `auto_junk` Optional parameter autojunk should be set to false to disable the
-  "automatic junk heuristic" that treats popular elements as junk. Default is true.
+    - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+  "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
 
   ## Example
@@ -734,11 +739,11 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - `a` The first of two sequences to be compared. The elements of a must be hashable.
-  - `b` The second of two sequences to be compared. The elements of b must be hashable.
-  - `opts` Keyword list of options.
-    - `fullbcount` Optional parameter fullbcount is a map of the counts of each element in b.
-  It will be constructed if it does not exist. Default is nil.
+  - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` - The second of two sequences to be compared. The elements of b must be hashable.
+  - `opts` - Keyword list of options.
+    - `fullbcount` - Optional parameter fullbcount is a map of the counts of each element in b.
+  It will be constructed if it does not exist. The default is `nil`.
 
   ## Example
 
@@ -798,8 +803,8 @@ defmodule Difflib.SequenceMatcher do
 
   ## Parameters
 
-  - `a` The first of two sequences to be compared. The elements of a must be hashable.
-  - `b` The second of two sequences to be compared. The elements of b must be hashable.
+  - `a` - The first of two sequences to be compared. The elements of a must be hashable.
+  - `b` - The second of two sequences to be compared. The elements of b must be hashable.
 
   ## Example
 
@@ -821,21 +826,21 @@ defmodule Difflib.SequenceMatcher do
   Use SequenceMatcher to return list of the best "good enough" matches.
 
   ## Description
-  The best (no more than n) matches among the possibilities are returned
+  The best (no more than `n`) matches among the possibilities are returned
   in a list, sorted by similarity score, most similar first.
 
   ## Parameters
 
-  - `word` The sequence for which close matches are desired. Typically a string.
-  - `possibilities` A list of sequences against which to match word. Typically a list of strings.
-  - `opts` Keyword list of options.
-    - `n` Optional parameter n is the maximum number of close matches to return. Default is 3 and n must be > 0.
-    - `cutoff` Optional parameter cutoff is a float between 0 and 1. Possibilities that don't score at least that similar to word are ignored. Default is 0.6.
-    - `is_junk` Optional parameter is_junk is a one-argument
+  - `word` - The sequence for which close matches are desired. Typically a string.
+  - `possibilities` - A list of sequences against which to match word. Typically a list of strings.
+  - `opts` - Keyword list of options.
+    - `n` - Optional parameter n is the maximum number of close matches to return. The default is 3 and n must be > 0.
+    - `cutoff` - Optional parameter cutoff is a float between 0 and 1. Possibilities that don't score at least that similar to word are ignored. The default is 0.6.
+    - `is_junk` - Optional parameter is_junk is a one-argument
     function that takes a sequence element and returns true if the
-    element is junk. The default is nil. For example, pass `fn x -> x == " "` if you're comparing lines as sequences of characters, and don't want to synch up on blanks or hard tabs.
-      - `auto_junk` Optional parameter autojunk should be set to false to disable the
-    "automatic junk heuristic" that treats popular elements as junk. Default is true.
+    element is junk. The default is `nil`. For example, pass `fn x -> x == " "` if you're comparing lines as sequences of characters, and don't want to synch up on blanks or hard tabs.
+      - `auto_junk` - Optional parameter autojunk should be set to false to disable the
+    "automatic junk heuristic" that treats popular elements as junk. The default is `true`.
 
   ## Example
 

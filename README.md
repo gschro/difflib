@@ -1,6 +1,10 @@
 # Difflib
 
-Difflib is a partial port of python 3's [difflib](https://github.com/python/cpython/blob/main/Lib/difflib.py). Difflib is a set of helpers for computing deltas between objects.
+A set of helpers for computing deltas between objects.
+
+Difflib is a partial port of python 3's [difflib](https://github.com/python/cpython/blob/main/Lib/difflib.py).
+
+The port is meant to closely resemble the code, docs, and tests from the python implementation for easy reference between the two.
 
 ## Status of the classes and functions to be ported from python 
 
